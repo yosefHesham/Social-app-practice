@@ -1,0 +1,22 @@
+User part
+1- register ----> mail verification
+2- login
+3- get users
+4- create user profile 
+5- edit user profile (image uploading)
+6- forget password
+7- user to user follow
+ - knowledge needed:
+        - node mailer
+        - jwt
+        - password encryption
+
+
+Social meda part:
+1 - POST api
+2- like, unlike post
+3- comment api
+4- get all posts
+5- open one post api
+
+
