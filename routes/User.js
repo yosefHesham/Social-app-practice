@@ -64,18 +64,26 @@ UserRouter.post("/user/login/", async (req, res) => {
   try {
     const { email, password } = req.body;
     let user = await User.User.findOne({ email }).exec();
-    const hash = await bcrypt.compare(password, user?.password);
-    if (!hash || !user) {
-      res.statusCode(401);
+    if (!user) {
+      res.statusCode = 404;
       return res.send({
         reponse: "Error while loggin in",
         message: "Invalid email or password ! ",
       });
     }
-    if (!user.mailVerified) {
-      res.statusCode = 401;
-      return res.send("Please Verify Your email");
+    const hash = await bcrypt.compare(password, user?.password);
+    if (!hash) {
+      res.statusCode = 404;
+      return res.send({
+        reponse: "Error while loggin in",
+        message: "Invalid email or password ! ",
+      });
     }
+
+    // if (!user.mailVerified) {
+    //   res.statusCode = 401;
+    //   return res.send("Please Verify Your email");
+    // }
     console.log(process.env.jwtPrivateKey);
     const token = jwt.sign({ id: user._id }, process.env.JWT_PRIVATE_KEY);
     res.statusCode = 200;
