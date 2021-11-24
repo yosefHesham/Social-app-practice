@@ -52,4 +52,5 @@ PostRouter.get(
   })
 );
 
+PostRouter.post("/posts/:id", async (req, res) => {});
 module.exports = PostRouter;
