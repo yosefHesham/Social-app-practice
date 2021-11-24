@@ -1,3 +1,4 @@
+const upload = require("../helpers/image_upload");
 const auth = require("../middlewares/auth");
 const Post = require("../models/post_model");
 const { User } = require("../models/user_model");
@@ -18,6 +19,7 @@ PostRouter.get(
     }
   },
   PostRouter.use(auth),
+  PostRouter.use(upload.single("post_image")),
 
   PostRouter.post("/posts", async (req, res) => {
     try {
@@ -52,5 +54,23 @@ PostRouter.get(
   })
 );
 
-PostRouter.post("/posts/:id", async (req, res) => {});
+PostRouter.post("/posts/:id", async (req, res) => {
+  try {
+    let post = await Post.findById(req.params.id);
+
+    if (!post) {
+      res.statusCode = 404;
+      res.send({ mesage: "Post not found" });
+    }
+    const { content } = req.body;
+    const imgUrl = req.file.path;
+    post.content = content;
+    post.postImage = imgUrl;
+    post = await post.save();
+    res.statusCode = 200;
+    res.send({ post: post });
+  } catch (e) {
+    res.send(e.message);
+  }
+});
 module.exports = PostRouter;
