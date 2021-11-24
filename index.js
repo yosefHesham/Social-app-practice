@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const UserRouter = require("./routes/User");
+const PostRouter = require("./routes/Post");
 const app = express();
 
 app.use(express.static(__dirname + "/public"));
@@ -12,5 +13,6 @@ require("dotenv").config();
 require("./startup/db")();
 
 app.use("/api", UserRouter);
+app.use("/api", PostRouter);
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => console.log("listening on ", port));
