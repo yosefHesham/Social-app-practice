@@ -12,7 +12,7 @@ app.use(cors());
 require("dotenv").config();
 require("./startup/db")();
 
-app.use("/api", UserRouter);
 app.use("/api", PostRouter);
+app.use("/api", UserRouter);
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => console.log("listening on ", port));

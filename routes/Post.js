@@ -1,6 +1,7 @@
 const upload = require("../helpers/image_upload");
 const auth = require("../middlewares/auth");
 const Post = require("../models/post_model");
+const mongoose = require("mongoose");
 const { User } = require("../models/user_model");
 
 const PostRouter = require("express").Router();
@@ -18,10 +19,39 @@ PostRouter.get(
       res.send(e.message);
     }
   },
-  PostRouter.use(auth),
+
+  PostRouter.get("/posts/:id", async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.id);
+      if (!post) {
+        res.statusCode = 404;
+        return res.send({ message: "Post not found" });
+      } else if (!post.isPublic) {
+        res.statusCode = 401;
+        res.send({ message: "You are not allowed to see this post" });
+      }
+      res.statusCode = 200;
+      res.send({ post: post });
+    } catch (e) {
+      res.send(e.message);
+    }
+  }),
+  PostRouter.get("/posts/user/:id", auth, async (req, res) => {
+    try {
+      const post = await Post.find().where("postedBy.id").equals(req.params.id);
+      if (!post) {
+        res.statusCode = 404;
+        return res.send({ message: "Post not found" });
+      }
+      res.statusCode = 200;
+      res.send({ post: post });
+    } catch (e) {
+      res.send(e.message);
+    }
+  }),
   PostRouter.use(upload.single("post_image")),
 
-  PostRouter.post("/posts", async (req, res) => {
+  PostRouter.post("/posts", auth, async (req, res) => {
     try {
       const userId = req.signedData.id;
       let user = await User.findById(userId).select("displayName imageUrl");
@@ -54,7 +84,7 @@ PostRouter.get(
   })
 );
 
-PostRouter.post("/posts/:id", async (req, res) => {
+PostRouter.post("/posts/:id", auth, async (req, res) => {
   try {
     let post = await Post.findById(req.params.id);
 
@@ -69,6 +99,16 @@ PostRouter.post("/posts/:id", async (req, res) => {
     post = await post.save();
     res.statusCode = 200;
     res.send({ post: post });
+  } catch (e) {
+    res.send(e.message);
+  }
+});
+
+PostRouter.delete("/posts/:id", auth, async (req, res) => {
+  try {
+    await Post.findByIdAndDelete(req.params.id);
+    res.statusCode = 200;
+    res.send({ message: "Post deleted Successfully" });
   } catch (e) {
     res.send(e.message);
   }
