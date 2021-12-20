@@ -194,3 +194,10 @@ UserRouter.post("/user/follow/:id", async (req, res) => {
     res.send(e.message);
   }
 });
+
+UserRouter.get("/user/followers", async (req, res) => {
+  const id = req.signedData.id;
+  const followers = await User.User.findById(id).select("followers");
+  res.send({ message: "Success", followers: followers });
+  console.log(followers);
+});
