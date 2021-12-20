@@ -1,7 +1,6 @@
 const upload = require("../helpers/image_upload");
 const auth = require("../middlewares/auth");
 const Post = require("../models/post_model");
-const mongoose = require("mongoose");
 const { User } = require("../models/user_model");
 
 const PostRouter = require("express").Router();
